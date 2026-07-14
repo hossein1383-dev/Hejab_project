@@ -70,9 +70,9 @@
                         </span>
                     </a>
                     @auth
-                        <a href="{{ route('index_profile') }}"
+                        <a href="{{ route('index') }}"
                             class="btn btn-outline-dark btn-sm rounded-pill px-3 login-btn">
-                            پروفایل
+                            خانه
                         </a>
                     @endauth
 

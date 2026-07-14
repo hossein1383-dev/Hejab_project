@@ -16,4 +16,17 @@ class Transaction extends Model
     {
         return $this->belongsTo(Order::class);
     }
+
+    public function getStatusAttribute($status)
+    {
+        switch ($status) {
+            case '0':
+                $status = 'ناموفق';
+                break;
+            case '1':
+                $status = 'موفق';
+                break;
+        }
+        return $status;
+    }
 }

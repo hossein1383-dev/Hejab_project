@@ -90,7 +90,7 @@
                             </span>
 
                             <strong>
-                                {{ number_format($transaction->amount) }} تومان
+                                {{ number_format($transaction->amount) }} ریال
                             </strong>
 
                         </div>
