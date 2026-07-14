@@ -23,6 +23,10 @@
 
 </head>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous">
+</script>
+
 <body>
     @include('partials.sweetalert')
     @section('title', 'Profile Page')
@@ -35,104 +39,94 @@
         </div>
     </section>
     <!-- HEADER -->
-    <header class="hh-header fixed-top bg-white shadow-sm">
+    <!-- header section strats -->
+    <header class="hh-header fixed-top bg-white">
         <div class="container">
-            <nav class="navbar navbar-light py-3 position-relative">
-                <!-- منوی موبایل -->
-                <div x-data="{ openSidebar: false }">
-                    <button @click="openSidebar=true"
-                        class="d-lg-none d-flex justify-content-center align-items-center pt-1"
-                        style="
-                        width:40px;
-                        height:40px;
-                        border-radius:50%;
-                        background:#050033;
-                        border:none;
-                        color:#fff;
-                        font-size:20px;
-                    ">
-                        ☰
+            <nav class="navbar navbar-light py-3 my-navbar">
+
+                <!-- Sidebar Toggler (Right) -->
+                <div class="d-flex justify-content-end">
+                    <button class="menu-toggle" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebar"
+                        aria-controls="sidebar">
+                        <i class="bi bi-list"></i>
                     </button>
-                    <!-- overlay -->
-                    <div x-show="openSidebar" x-transition.opacity @click="openSidebar=false"
-                        class="position-fixed top-0 start-0 w-100 h-100 bg-dark bg-opacity-50" style="z-index:1050;">
-                    </div>
-                    <!-- sidebar -->
-                    <div x-show="openSidebar" x-transition:enter="transition ease-out duration-300"
-                        x-transition:enter-start="translate-x-full" x-transition:enter-end="translate-x-0"
-                        x-transition:leave="transition ease-in duration-200" x-transition:leave-start="translate-x-0"
-                        x-transition:leave-end="translate-x-full" class="position-fixed bg-white shadow"
-                        style="
-                        top:0;
-                        right:0;
-                        width:250px;
-                        height:100vh;
-                        z-index:1100;
-                        overflow-y:auto;
-                    ">
-                        <div class="p-3 border-bottom d-flex justify-content-between">
-                            <strong>
-                                حساب کاربری
-                            </strong>
-                            <span @click="openSidebar=false" style="cursor:pointer">
-                                ✕
-                            </span>
-                        </div>
-                        <ul class="list-group list-group-flush sidebar-links">
-                            <li class="list-group-item">
-                                <a href="{{ route('index_profile') }}">
-                                    اطلاعات کاربر
-                                </a>
-                            </li>
-                            <li class="list-group-item">
-                                <a href="{{ route('addresses') }}">
-                                    آدرس‌ها
-                                </a>
-                            </li>
-                            <li class="list-group-item">
-                                <a href="{{ route('profile_orders') }}">
-                                    سفارشات
-                                </a>
-                            </li>
-                            <li class="list-group-item">
-                                <a href="#">
-                                    تراکنش‌ها
-                                </a>
-                            </li>
-                            <li class="list-group-item">
-                                <a href="{{ route('logout') }}">
-                                    خروج
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
                 </div>
-                <!-- لوگو -->
-                <a class="navbar-brand mx-auto fw-bold me-2 ms-1 mt-2" href="{{ route('index') }}">
-                    MORVARID HIJAB
+
+
+                <!-- Logo (Center) -->
+                <a class="navbar-brand mx-auto fw-bold mt-2" href="{{ route('index') }}">
+                    MORVARID HEJAB
                 </a>
-                <!-- آیکن‌ها -->
+
+                <!-- Icons (Left) -->
                 <div class="d-flex align-items-center gap-1">
-                    <a href="{{ route('cart_index') }}" class="cart-icon text-dark position-relative">
-                        <i class="bi bi-cart-fill fs-5"></i>
+
+                    <!-- سبد خرید با استایل مدرن -->
+                    <a href="{{ route('cart_index') }}" class="cart-icon">
+                        <i class="bi bi-cart-fill"></i>
+
                         <span id="cart-count" class="cart-badge">
                             {{ collect(session('cart', []))->sum('qty') }}
                         </span>
                     </a>
                     @auth
-                        <a href="{{ route('index') }}" class="btn btn-outline-dark btn-sm rounded-pill px-3">
-                            صفحه اصلی
+                        <a href="{{ route('index_profile') }}"
+                            class="btn btn-outline-dark btn-sm rounded-pill px-3 login-btn">
+                            پروفایل
                         </a>
                     @endauth
+
                     @guest
-                        <a href="{{ route('login_form') }}" class="btn btn-outline-dark btn-sm rounded-pill px-3">
+                        <a href="{{ route('login_form') }}" class="btn btn-outline-dark btn-sm rounded-pill px-3 login-btn">
                             ورود
                         </a>
                     @endguest
+                    <!-- دکمه ورود حرفه‌ای -->
                 </div>
+
             </nav>
         </div>
     </header>
+
+    <!-- Spacer for fixed header -->
+    <div style="height: 80px;"></div>
+
+    <!-- Offcanvas Sidebar -->
+    <div class="offcanvas offcanvas-start" tabindex="-1" id="sidebar" aria-labelledby="sidebarLabel">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="sidebarLabel">منو</h5>
+            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="بستن"></button>
+        </div>
+        <div class="offcanvas-body">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('index_profile') }}">
+                        اطلاعات کاربر
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('addresses') }}">
+                        آدرس‌ها
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('profile_orders') }}">
+                        سفارشات
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('profile_transactions') }}">
+                        تراکنش‌ها
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('logout') }}">
+                        خروج
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
 
     <style>
         /* جلوگیری از افتادن محتوا زیر هدر */
