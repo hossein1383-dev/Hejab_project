@@ -41,6 +41,7 @@ Route::prefix('profile')
     ->group(function () {
         Route::get('/', [ProfileConrtoller::class, 'index'])->name('index_profile');
         Route::put('/{user}', [ProfileConrtoller::class, 'update'])->name('profile_update');
+        Route::get('/orders', [ProfileConrtoller::class, 'orders'])->name('profile_orders');
     });
 Route::prefix('addresses')
     ->middleware('auth')

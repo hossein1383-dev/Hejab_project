@@ -16,6 +16,11 @@ class UserAddress extends Model
 
     public function city()
     {
-        return $this->belongsTo(City::class);
+        return $this->belongsTo(City::class, 'city_id');
+    }
+
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
     }
 }

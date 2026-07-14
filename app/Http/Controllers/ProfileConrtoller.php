@@ -27,4 +27,14 @@ class ProfileConrtoller extends Controller
 
         return redirect()->route('index_profile')->with('success', 'اطلاعات با موفقیت ویرایش شد');
     }
+
+public function orders()
+{
+    $orders = Auth::user()
+        ->orders()
+        ->with('address.city')
+        ->get();
+
+    return view('profile.order', compact('orders'));
+}
 }
