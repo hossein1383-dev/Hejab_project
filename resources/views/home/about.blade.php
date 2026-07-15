@@ -6,12 +6,12 @@
 <section class="about_section layout_padding">
     <div class="container">
 
-        <div class="row">
-            <div class="col-md-6 ">
+        <div class="row pt-3">
+            {{-- <div class="col-md-6 ">
                 <div class="img-box">
                     <img src="{{ asset('images/test2.png') }}" alt="" />
                 </div>
-            </div>
+            </div> --}}
             <div class="col-md-6">
                 <div class="detail-box">
                     <div class="heading_container">
