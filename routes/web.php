@@ -55,8 +55,11 @@ Route::prefix('addresses')
     });
 
 Route::prefix('cart')
-    ->middleware('auth')
     ->group(function () {
+        Route::get('/cart', [CatrController::class, 'index'])->name('cart_index');
+        Route::get('/cart/add', [CatrController::class, 'add'])->name('cart_add');
+        Route::post('/cart/decrement', [CatrController::class, 'decrement'])->name('decrement');
+        Route::post('/cart/increment', [CatrController::class, 'increment'])->name('increment');
         Route::get('/remove', [CatrController::class, 'remove'])->name('cart_remove');
         Route::get('clear', [CatrController::class, 'clear'])->name('cart_clear');
     });
@@ -64,9 +67,7 @@ Route::prefix('cart')
 Route::prefix('payment')
     ->middleware('auth')
     ->group(function () {
-        Route::post('/send', [PaymentController::class, 'send'])
-            ->name('payment_send');
+        Route::post('/send', [PaymentController::class, 'send'])->name('payment_send');
 
-        Route::get('/verify/{transaction}', [PaymentController::class, 'verify'])
-            ->name('payment_verify');
+        Route::get('/verify/{transaction}', [PaymentController::class, 'verify'])->name('payment_verify');
     });

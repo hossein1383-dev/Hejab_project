@@ -179,6 +179,7 @@
                                     <select class="form-select w-100" x-model="address_id">
                                         <option value="">انتخاب آدرس</option>
                                         @foreach ($addresses as $address)
+                                        {{-- {{ dd($address) }} --}}
                                             <option value="{{ $address->id }}">
                                                 {{ Str::words($address->address, 3, '...') }}
                                             </option>

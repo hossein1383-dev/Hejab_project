@@ -12,7 +12,7 @@ class CatrController extends Controller
 {
     public function index(Request $request)
     {
-        $addresses = UserAddress::all();
+        $addresses = UserAddress::where('user_id', Auth::id())->get();
         // dd($addresses);
         $cart = $request->Session()->get('cart');
 
