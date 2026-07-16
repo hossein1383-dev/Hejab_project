@@ -57,10 +57,6 @@ Route::prefix('addresses')
 Route::prefix('cart')
     ->middleware('auth')
     ->group(function () {
-        Route::get('/', [CatrController::class, 'index'])->name('cart_index');
-        Route::post('/increment', [CatrController::class, 'increment'])->name('increment');
-        Route::post('/decrement', [CatrController::class, 'decrement'])->name('decrement');
-        Route::get('/add', [CatrController::class, 'add'])->name('cart_add');
         Route::get('/remove', [CatrController::class, 'remove'])->name('cart_remove');
         Route::get('clear', [CatrController::class, 'clear'])->name('cart_clear');
     });
