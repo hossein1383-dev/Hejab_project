@@ -179,7 +179,7 @@
                                     <select class="form-select w-100" x-model="address_id">
                                         <option value="">انتخاب آدرس</option>
                                         @foreach ($addresses as $address)
-                                        {{-- {{ dd($address) }} --}}
+                                            {{-- {{ dd($address) }} --}}
                                             <option value="{{ $address->id }}">
                                                 {{ Str::words($address->address, 3, '...') }}
                                             </option>
@@ -216,16 +216,32 @@
                                     <li class="list-group-item d-flex justify-content-between">
                                         <span>مجموع قیمت: </span>
                                         <span id="cart-total">
-                                            {{-- {{ number_format($totalPrice) }} تومان --}}
+                                            {{ number_format($totals['total_price'] ?? 0) }} تومان
                                         </span>
                                     </li>
                                     <li class="list-group-item d-flex justify-content-between">
-                                        <span>تخفیف: <span class="text-danger">10%</span></span>
-                                        <span class="text-danger">53,500 تومان</span>
+                                        <span>تخفیف: <span class="text-danger" id="discount-percent">
+                                                @php
+                                                    $percent =
+                                                        $totals['total_price'] > 0
+                                                            ? round(
+                                                                (($totals['total_price'] - $totals['final_price']) /
+                                                                    $totals['total_price']) *
+                                                                    100,
+                                                            )
+                                                            : 0;
+                                                @endphp
+                                                {{ $percent }}%
+                                            </span></span>
+                                        <span class="text-danger" id="cart-discount-amount">
+                                            {{ number_format($totals['total_discount'] ?? 0) }} تومان
+                                        </span>
                                     </li>
                                     <li class="list-group-item d-flex justify-content-between fw-bold">
                                         <span>قیمت پرداختی:</span>
-                                        <span>481,500 تومان</span>
+                                        <span id="cart-final">
+                                            {{ number_format($totals['final_price'] ?? 0) }} تومان
+                                        </span>
                                     </li>
                                 </ul>
 
@@ -247,12 +263,31 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
 
+            // تابع کمکی برای به‌روزرسانی جمع کل
+            function updateTotals(data) {
+                const cartTotal = document.getElementById('cart-total');
+                if (cartTotal) {
+                    cartTotal.textContent = Number(data.total_price).toLocaleString('fa-IR') + ' تومان';
+                }
+                const discountAmount = document.getElementById('cart-discount-amount');
+                if (discountAmount) {
+                    discountAmount.textContent = Number(data.total_discount).toLocaleString('fa-IR') + ' تومان';
+                }
+                const finalPrice = document.getElementById('cart-final');
+                if (finalPrice) {
+                    finalPrice.textContent = Number(data.final_price).toLocaleString('fa-IR') + ' تومان';
+                }
+                // به‌روزرسانی تعداد در Badge
+                document.querySelectorAll('.cart-badge').forEach(el => {
+                    el.textContent = data.cart_count;
+                });
+            }
+
+            // ---- افزایش ----
             document.querySelectorAll('.plus-btn').forEach(btn => {
-
                 btn.addEventListener('click', function(e) {
-
                     e.preventDefault();
-
+                    const productId = this.dataset.productId;
                     fetch("{{ route('increment') }}", {
                             method: "POST",
                             headers: {
@@ -261,13 +296,12 @@
                                 "X-Requested-With": "XMLHttpRequest"
                             },
                             body: JSON.stringify({
-                                product_id: this.dataset.productId,
+                                product_id: productId,
                                 qty: 1
                             })
                         })
                         .then(res => res.json())
                         .then(data => {
-
                             if (!data.success) {
                                 Toast.fire({
                                     icon: 'error',
@@ -275,46 +309,36 @@
                                 });
                                 return;
                             }
-
+                            // به‌روزرسانی سطر جاری
                             const row = this.closest('.cart-item');
-
                             row.querySelector('.input-number').textContent = data.qty;
-
                             const itemPrice = row.querySelector('.item-total-price');
-
                             if (itemPrice) {
-                                itemPrice.textContent =
-                                    Number(data.item_total).toLocaleString('fa-IR');
+                                itemPrice.textContent = Number(data.item_total).toLocaleString(
+                                    'fa-IR');
                             }
-
-                            const cartTotal = document.getElementById('cart-total');
-
-                            if (cartTotal) {
-                                cartTotal.textContent =
-                                    Number(data.cart_total).toLocaleString('fa-IR');
-                            }
-
-                            document.querySelectorAll('.cart-badge').forEach(el => {
-                                el.textContent = data.cart_count;
-                            });
-
+                            // به‌روزرسانی جمع کل
+                            updateTotals(data);
                             Toast.fire({
                                 icon: 'success',
                                 title: data.message
                             });
-
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            Toast.fire({
+                                icon: 'error',
+                                title: 'خطا در ارتباط با سرور'
+                            });
                         });
-
                 });
-
             });
 
+            // ---- کاهش ----
             document.querySelectorAll('.minus-btn').forEach(btn => {
-
                 btn.addEventListener('click', function(e) {
-
                     e.preventDefault();
-
+                    const productId = this.dataset.productId;
                     fetch("{{ route('decrement') }}", {
                             method: "POST",
                             headers: {
@@ -323,42 +347,47 @@
                                 "X-Requested-With": "XMLHttpRequest"
                             },
                             body: JSON.stringify({
-                                product_id: this.dataset.productId
+                                product_id: productId
                             })
                         })
                         .then(res => res.json())
                         .then(data => {
-
                             if (!data.success) return;
 
                             const row = this.closest('.cart-item');
-
-                            if (data.qty > 0) {
-                                row.querySelector('.input-number').textContent = data.qty;
-
-                                const itemPrice = row.querySelector('.item-total-price');
-
-                                if (itemPrice) {
-                                    itemPrice.textContent =
-                                        Number(data.item_total).toLocaleString('fa-IR');
+                            if (data.removed) {
+                                // حذف سطر از DOM
+                                row.remove();
+                                // اگر سبد خرید خالی شد، می‌توانید کل صفحه را ریلود کنید یا پیغام خالی بودن نشان دهید
+                                // برای سادگی، در صورت خالی بودن کل سبد، صفحه را refresh کنید
+                                if (data.cart_count === 0) {
+                                    location.reload(); // یا پیام مناسب
+                                    return;
                                 }
-
-                                const cartTotal = document.getElementById('cart-total');
-
-                                if (cartTotal) {
-                                    cartTotal.textContent =
-                                        Number(data.cart_total).toLocaleString('fa-IR');
+                            } else {
+                                // به‌روزرسانی تعداد و قیمت سطر
+                                row.querySelector('.input-number').textContent = data.qty;
+                                const itemPrice = row.querySelector('.item-total-price');
+                                if (itemPrice) {
+                                    itemPrice.textContent = Number(data.item_total)
+                                        .toLocaleString('fa-IR');
                                 }
                             }
-
-                            document.querySelectorAll('.cart-badge').forEach(el => {
-                                el.textContent = data.cart_count;
+                            // به‌روزرسانی جمع کل
+                            updateTotals(data);
+                            Toast.fire({
+                                icon: 'success',
+                                title: data.message
                             });
-
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            Toast.fire({
+                                icon: 'error',
+                                title: 'خطا در ارتباط با سرور'
+                            });
                         });
-
                 });
-
             });
 
         });

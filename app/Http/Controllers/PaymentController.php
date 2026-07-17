@@ -25,9 +25,24 @@ class PaymentController extends Controller
         }
 
         $total = 0;
+        $orderItems = []; // برای ذخیره آیتم‌ها برای استفاده بعدی
 
-        foreach ($cart as $item) {
-            $total += $item['price'] * $item['qty'];
+        // محاسبه total با احتساب تخفیف هر محصول
+        foreach ($cart as $productId => $item) {
+            $product = Product::findOrFail($productId);
+
+            // قیمت با تخفیف یا بدون تخفیف
+            $price = $product->is_sale ? $product->sale_price : $product->price;
+
+            // جمع کل با قیمت تخفیف‌خورده
+            $total += $price * $item['qty'];
+
+            // ذخیره اطلاعات برای استفاده در OrderItem
+            $orderItems[$productId] = [
+                'product' => $product,
+                'price' => $price,
+                'qty' => $item['qty'],
+            ];
         }
 
         DB::beginTransaction();
@@ -36,21 +51,18 @@ class PaymentController extends Controller
             $order = Order::create([
                 'user_id' => auth()->id(),
                 'address_id' => $request->address_id,
-                'total_amount' => $total,
+                'total_amount' => $total, // الان total با تخفیف محاسبه شده
                 'paying_amount' => $total,
             ]);
 
-            foreach ($cart as $productId => $item) {
-                $product = Product::findOrFail($productId);
-
-                $price = $product->is_sale ? $product->sale_price : $product->price;
-
+            // ایجاد آیتم‌های سفارش با قیمت‌های تخفیف‌خورده
+            foreach ($orderItems as $productId => $item) {
                 OrderItem::create([
                     'order_id' => $order->id,
-                    'product_id' => $product->id,
-                    'price' => $price,
+                    'product_id' => $productId,
+                    'price' => $item['price'], // قیمت تخفیف‌خورده یا اصلی
                     'quantity' => $item['qty'],
-                    'subtotal' => $price * $item['qty'],
+                    'subtotal' => $item['price'] * $item['qty'], // زیرمجموع با تخفیف
                 ]);
             }
 

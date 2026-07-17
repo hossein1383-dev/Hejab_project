@@ -8,6 +8,7 @@ use App\Services\SmsService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
@@ -23,26 +24,38 @@ class AuthController extends Controller
         ]);
 
         try {
-            $user = User::where('cellphone', $request->cellphone)->first();
             $otpCode = mt_rand(100000, 999999);
-            $loginToken = Hash::make('FBScslddsh$&clsdc*dcncd@DCD');
+            $loginToken = Str::random(60); // توکن یکتا
 
-            if ($user) {
-                $user->update([
+            $user = User::updateOrCreate(
+                ['cellphone' => $request->cellphone],
+                [
                     'otp' => $otpCode,
                     'login_token' => $loginToken,
-                ]);
-            } else {
-                $user = User::create([
-                    'cellphone' => $request->cellphone,
-                    'otp' => $otpCode,
-                    'login_token' => $loginToken,
-                ]);
-            }
+                ],
+            );
+
+            // ارسال پیامک حاوی کد OTP
+            $this->sendOtpSms($request->cellphone, $otpCode);
+
             return response()->json(['login_token' => $loginToken], 200);
         } catch (\Exception $ex) {
             return response()->json(['errors' => $ex->getMessage()], 500);
         }
+    }
+
+    private function sendOtpSms($mobile, $otpCode)
+    {
+        $templateId = 351359; // شناسه الگوی پیامکی (واقعی)
+        $parameters = [
+            [
+                'name' => 'Code',
+                'value' => $otpCode, // کد تولیدشده را ارسال می‌کنیم
+            ],
+        ];
+
+        // ارسال با استفاده از Facade SmsIr
+        SmsIr::verifySend($mobile, $templateId, $parameters);
     }
 
     public function checkOtp(Request $request)
@@ -73,33 +86,23 @@ class AuthController extends Controller
         try {
             $user = User::where('login_token', $request->login_token)->firstOrFail();
             $otpCode = mt_rand(100000, 999999);
-            $loginToken = Hash::make('FBScslddsh$&clsdc*dcncd@DCD');
+            $loginToken = Str::random(60);
 
             $user->update([
                 'otp' => $otpCode,
                 'login_token' => $loginToken,
             ]);
 
-            // $mobile = $request->cellphone;
-            // $templateId = 208525; // شناسه الگو واقعی
-            // $parameters = [
-            //     [
-            //         'name' => 'Code',
-            //         'value' => rand(10000, 99999),
-            //     ],
-            // ];
-
-            // $response = SmsIr::verifySend($mobile, $templateId, $parameters);
-
-            // dd($response);
+            // ارسال پیامک با کد جدید
+            $this->sendOtpSms($user->cellphone, $otpCode);
 
             return response()->json(['login_token' => $loginToken], 200);
         } catch (\Exception $ex) {
             return response()->json(['errors' => $ex->getMessage()], 500);
         }
     }
-
-    public function logout(Request $request){
+    public function logout(Request $request)
+    {
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerate();

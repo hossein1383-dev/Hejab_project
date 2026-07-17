@@ -30,7 +30,4 @@
 
      @include('home.product')
 
-
-    @include('home.about')
-
 @endsection

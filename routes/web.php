@@ -52,6 +52,7 @@ Route::prefix('addresses')
         Route::post('/', [AddressController::class, 'store'])->name('addresses_store');
         Route::get('/{address}/edit', [AddressController::class, 'edit'])->name('addresses_edit');
         Route::put('/{address}/edit', [AddressController::class, 'update'])->name('addresses_update');
+        Route::delete('/{address}', [AddressController::class, 'destroy'])->name('addresses_destroy');
     });
 
 Route::prefix('cart')

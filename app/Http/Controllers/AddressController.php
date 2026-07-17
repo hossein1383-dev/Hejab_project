@@ -50,11 +50,10 @@ class AddressController extends Controller
 
     public function edit(UserAddress $address)
     {
-        
         // dd($address);
         $provinces = Province::all();
         $cities = City::select('id', 'name', 'province_id')->get();
-        return view('profile.addresses.edit', compact('cities', 'provinces','address'));
+        return view('profile.addresses.edit', compact('cities', 'provinces', 'address'));
     }
 
     public function update(Request $request, UserAddress $address)
@@ -77,5 +76,11 @@ class AddressController extends Controller
         ]);
         // dd($address);
         return redirect()->route('addresses')->with('success', 'آدرس شما با موفقیت ویرایش شد');
+    }
+
+    public function destroy(UserAddress $address)
+    {
+        $address->delete();
+        return redirect()->route('addresses')->with('warning', 'آدرس با موفقیت حذف شد');
     }
 }

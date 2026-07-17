@@ -42,11 +42,16 @@
 
                 </div>
 
-                <div class="mt-4">
-                    <a href="{{ route('addresses_edit', ['address' => $address->id]) }}" class="btn btn-primary w-50" style="display:block; margin:0 auto;">
-
+                <div class="d-flex justify-content-start gap-2 mt-4">
+                    <a href="{{ route('addresses_edit', ['address' => $address->id]) }}" class="btn btn-primary">
                         ویرایش
                     </a>
+
+                    <form action="{{ route('addresses_destroy', ['address' => $address->id]) }}" method="POST">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-danger">حذف</button>
+                    </form>
                 </div>
 
             </div>
