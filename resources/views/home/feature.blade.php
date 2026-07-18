@@ -2,7 +2,7 @@
     $features = App\Models\Feature::all();
 @endphp
 
-<section class="card-area py-5">
+<section class="card-area pt-5">
     <div class="container pb-3">
         <div class="row gy-4 gx-4">
             @foreach ($features as $feature)

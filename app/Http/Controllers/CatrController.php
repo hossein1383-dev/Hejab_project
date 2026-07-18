@@ -95,22 +95,34 @@ class CatrController extends Controller
      */
     public function add(Request $request)
     {
+        // اعتبارسنجی ورودی (با افزودن min:1 برای جلوگیری از عدد منفی یا صفر)
         $request->validate([
             'product_id' => 'required|integer|exists:products,id',
-            'qty' => 'required|integer',
+            'qty' => 'required|integer|min:1',
         ]);
 
         $product = Product::findOrFail($request->product_id);
-
-        if ($request->qty > $product->quantity) {
-            return redirect()->back()->with('error', 'تعداد محصول مورد نظر بیشتر از حد مجاز می‌باشد');
-        }
-
         $cart = session('cart', []);
 
+        // بررسی وجود محصول در سبد خرید
         if (isset($cart[$product->id])) {
-            $cart[$product->id]['qty'] = $request->qty;
+            // جمع تعداد موجود در سبد با تعداد جدید
+            $newQty = $cart[$product->id]['qty'] + $request->qty;
+
+            // بررسی اینکه مجموع از موجودی انبار بیشتر نباشد
+            if ($newQty > $product->quantity) {
+                return redirect()->back()->with('error', 'تعداد کل محصول در سبد خرید بیشتر از حد مجاز می‌باشد');
+            }
+
+            // بروزرسانی تعداد در سبد
+            $cart[$product->id]['qty'] = $newQty;
         } else {
+            // در صورت عدم وجود، ابتدا بررسی ساده موجودی (مانند قبل)
+            if ($request->qty > $product->quantity) {
+                return redirect()->back()->with('error', 'تعداد محصول مورد نظر بیشتر از حد مجاز می‌باشد');
+            }
+
+            // افزودن محصول جدید به سبد خرید
             $cart[$product->id] = [
                 'name' => $product->name,
                 'quantity' => $product->quantity,

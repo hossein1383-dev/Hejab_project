@@ -59,7 +59,7 @@
                 </a>
 
                 <!-- Icons (Left) -->
-                <div class="d-flex align-items-center gap-1">
+                <div class="d-flex align-items-center">
 
                     <!-- سبد خرید با استایل مدرن -->
                     <a href="{{ route('cart_index') }}" class="cart-icon">
@@ -70,9 +70,8 @@
                         </span>
                     </a>
                     @auth
-                        <a href="{{ route('index') }}"
-                            class="btn btn-outline-dark btn-sm rounded-pill px-3 login-btn">
-                            خانه
+                        <a href="{{ route('index') }}" class="cart-icon">
+                            <i class="bi bi-house-fill"></i>
                         </a>
                     @endauth
 

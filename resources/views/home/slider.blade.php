@@ -95,3 +95,19 @@
 
             </section>
             <!-- end slider section -->
+
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    const carouselElement = document.getElementById('customCarousel1');
+
+                    if (carouselElement) {
+                        carouselElement.addEventListener('slide.bs.carousel', function(event) {
+                            if (event.direction === 'left') {
+                                event.direction = 'right';
+                            } else if (event.direction === 'right') {
+                                event.direction = 'left';
+                            }
+                        });
+                    }
+                });
+            </script>

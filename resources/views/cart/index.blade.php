@@ -169,7 +169,7 @@
                             <!-- دکمه ایجاد آدرس (سمت چپ در لپ‌تاپ و تبلت) -->
                             <div class="w-100 w-md-auto">
                                 <a href="{{ route('addresses_create') }}" class="btn btn-primary w-100 text-nowrap">
-                                    ایجاد آدرس
+                                    افزودن آدرس
                                 </a>
                             </div>
 
@@ -221,17 +221,6 @@
                                     </li>
                                     <li class="list-group-item d-flex justify-content-between">
                                         <span>تخفیف: <span class="text-danger" id="discount-percent">
-                                                @php
-                                                    $percent =
-                                                        $totals['total_price'] > 0
-                                                            ? round(
-                                                                (($totals['total_price'] - $totals['final_price']) /
-                                                                    $totals['total_price']) *
-                                                                    100,
-                                                            )
-                                                            : 0;
-                                                @endphp
-                                                {{ $percent }}%
                                             </span></span>
                                         <span class="text-danger" id="cart-discount-amount">
                                             {{ number_format($totals['total_discount'] ?? 0) }} تومان

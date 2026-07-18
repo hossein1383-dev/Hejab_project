@@ -48,13 +48,12 @@
                         </div>
 
 
-                        <!-- Logo (Center) -->
                         <a class="navbar-brand mx-auto fw-bold mt-2" href="{{ route('index') }}">
                             MORVARID HEJAB
                         </a>
 
                         <!-- Icons (Left) -->
-                        <div class="d-flex align-items-center gap-1">
+                        <div class="d-flex align-items-center">
 
                             <!-- سبد خرید با استایل مدرن -->
                             <a href="{{ route('cart_index') }}" class="cart-icon">
@@ -64,19 +63,7 @@
                                     {{ collect(session('cart', []))->sum('qty') }}
                                 </span>
                             </a>
-                            @auth
-                                <a href="{{ route('index_profile') }}"
-                                    class="btn btn-outline-dark btn-sm rounded-pill px-3 login-btn">
-                                    پروفایل
-                                </a>
-                            @endauth
-
-                            @guest
-                                <a href="{{ route('login_form') }}"
-                                    class="btn btn-outline-dark btn-sm rounded-pill px-3 login-btn">
-                                    ورود
-                                </a>
-                            @endguest
+ 
                             <!-- دکمه ورود حرفه‌ای -->
                         </div>
 
@@ -110,6 +97,21 @@
                         <li class="nav-item">
                             <a class="nav-link {{ request()->is('contact*') ? 'active' : '' }}"
                                 href="{{ route('contact_index') }}">تماس</a>
+                        </li>
+                        <li class="nav-item">
+                            @auth
+                                <a href="{{ route('index_profile') }}"
+                                    class="nav-link {{ request()->is('contact*') ? 'active' : '' }}"‍>
+                                    پنل کاربری
+                                </a>
+                            @endauth
+
+                            @guest
+                                <a href="{{ route('login_form') }}"
+                                    class="nav-link {{ request()->is('contact*') ? 'active' : '' }}"‍>
+                                    ثبت نام | ورود
+                                </a>
+                            @endguest
                         </li>
                     </ul>
                 </div>

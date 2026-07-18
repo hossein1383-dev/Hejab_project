@@ -7,6 +7,42 @@
             <div class="container">
                 <div class="row">
                     <div class="col-md-4 footer-col">
+                        <h4>
+                            ساعت کاری
+                        </h4>
+                        <p>
+                            {{ $footer->work_days }}
+                        </p>
+                        <p>
+                            {{ $footer->work_hour_from }}صبح تا {{ $footer->work_hour_to }} شب
+                        </p>
+                    </div>
+
+                    <div class="col-md-4 footer-col">
+                        <div class="footer_detail">
+                            <a href="" class="footer-logo">
+                                {{ $footer->title }}
+                            </a>
+                            <p>
+                                {{ $footer->body }}
+                            </p>
+                            <div class="footer_social">
+                                {{-- <a href={{ $footer->telegram_link }}>
+                                    <i class="bi bi-telegram"></i>
+                                </a>
+                                <a href={{ $footer->whatsapp_link }}>
+                                    <i class="bi bi-whatsapp"></i> --}}
+                                </a>
+                                <a href={{ $footer->instagram_link }}>
+                                    <i class="bi bi-instagram"></i>
+                                </a>
+                                <a href={{ $footer->eitaa_link }}>
+                                    <img src="{{ '/images/eitaa.svg' }}" width="24" height="24" alt="Eitaa">
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 footer-col">
                         <div class="footer_contact">
                             <h4>
                                 تماس با ما
@@ -35,41 +71,6 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-4 footer-col">
-                        <div class="footer_detail">
-                            <a href="" class="footer-logo">
-                                {{ $footer->title }}
-                            </a>
-                            <p>
-                                {{ $footer->body }}
-                            </p>
-                            <div class="footer_social">
-                                {{-- <a href={{ $footer->telegram_link }}>
-                                    <i class="bi bi-telegram"></i>
-                                </a>
-                                <a href={{ $footer->whatsapp_link }}>
-                                    <i class="bi bi-whatsapp"></i> --}}
-                                </a>
-                                <a href={{ $footer->instagram_link }}>
-                                    <i class="bi bi-instagram"></i>
-                                </a>
-                                <a href={{ $footer->eitaa_link }}>
-                                    <img src="{{ '/images/eitaa.svg' }}" width="24" height="24" alt="Eitaa">
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4 footer-col">
-                        <h4>
-                            ساعت کاری
-                        </h4>
-                        <p>
-                            {{ $footer->work_days }}
-                        </p>
-                        <p>
-                            {{ $footer->work_hour_from }}صبح تا {{ $footer->work_hour_to }} شب
-                        </p>
-                    </div>
                 </div>
                 <div class="footer-info">
                     <p>
@@ -84,7 +85,7 @@
             integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous">
         </script>
 
-        
+
 
         @yield('script')
         </body>
