@@ -11,8 +11,8 @@ url(../fonts/Vazir.ttf) format("truetype");
 
 body {
 font-family: "Vazir", sans-serif !important;
-color: #0c0c0c;
-background-color: #ffffff;
+color: #E0E8F0;
+background-color: #0A0A0A;
 overflow-x: hidden;
 }
 
