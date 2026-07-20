@@ -22,8 +22,13 @@ Route::group(['prefix' => 'contact'], function () {
     Route::post('/store', [ContactUsController::class, 'store'])->name('contact_store');
 });
 
-Route::get('/product/{product:slug}', [ProductController::class, 'show'])->name('product_show');
-Route::get('/menu', [ProductController::class, 'menu'])->name('product_menu');
+Route::group(['prefix' => 'product'], function () {
+    Route::get('/{product:slug}', [ProductController::class, 'show'])->name('product_show');
+    Route::get('/', [ProductController::class, 'menu'])->name('product_menu');
+    Route::get('/menu/chador', [ProductController::class, 'showChador'])->name('chador');
+    Route::get('/menu/aba', [ProductController::class, 'showAba'])->name('aba');
+    Route::get('/menu/rosary', [ProductController::class, 'showRosary'])->name('rosary');
+});
 
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'loginForm'])->name('login_form');
@@ -55,15 +60,14 @@ Route::prefix('addresses')
         Route::delete('/{address}', [AddressController::class, 'destroy'])->name('addresses_destroy');
     });
 
-Route::prefix('cart')
-    ->group(function () {
-        Route::get('/cart', [CatrController::class, 'index'])->name('cart_index');
-        Route::get('/cart/add', [CatrController::class, 'add'])->name('cart_add');
-        Route::post('/cart/decrement', [CatrController::class, 'decrement'])->name('decrement');
-        Route::post('/cart/increment', [CatrController::class, 'increment'])->name('increment');
-        Route::get('/remove', [CatrController::class, 'remove'])->name('cart_remove');
-        Route::get('clear', [CatrController::class, 'clear'])->name('cart_clear');
-    });
+Route::prefix('cart')->group(function () {
+    Route::get('/', [CatrController::class, 'index'])->name('cart_index');
+    Route::post('/add', [CatrController::class, 'add'])->name('cart_add'); // تغییر متد به POST
+    Route::post('/decrement', [CatrController::class, 'decrement'])->name('decrement');
+    Route::post('/increment', [CatrController::class, 'increment'])->name('increment');
+    Route::get('/remove', [CatrController::class, 'remove'])->name('cart_remove');
+    Route::get('/clear', [CatrController::class, 'clear'])->name('cart_clear');
+});
 
 Route::prefix('payment')
     ->middleware('auth')

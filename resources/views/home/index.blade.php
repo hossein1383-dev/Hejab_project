@@ -106,8 +106,8 @@
 @endsection
 
 @section('content')
-    {{-- {{ dd(session()->all()) }} --}}
     @include('home.feature')
+    @include('home.vector')
 
     @include('home.product')
 

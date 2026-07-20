@@ -68,9 +68,9 @@
 
             <!-- تب‌ها -->
             <ul class="filters_menu">
-                <li :class="tab === 1 ? 'active' : ''" @click="tab = 1">روسری</li>
-                <li :class="tab === 2 ? 'active' : ''" @click="tab = 2">چادر</li>
-                <li :class="tab === 3 ? 'active' : ''" @click="tab = 3">عبا</li>
+                <li :class="tab === 1 ? 'active' : ''" @click="tab = 1">چادر</li>
+                <li :class="tab === 2 ? 'active' : ''" @click="tab = 2">عبا</li>
+                <li :class="tab === 3 ? 'active' : ''" @click="tab = 3">روسری</li>
             </ul>
 
 
@@ -94,8 +94,8 @@
             @endphp
 
             <!-- محتوا -->
-            <div class="products-grid">
-                <div x-show="tab === 1" class="scroll-box">
+            <div class="">
+                <div x-show="tab === 3" class="scroll-box">
                     <div class="scroll-inner my-scroll">
                         @foreach ($rosaries as $rosary)
                             <div class="product-card">
@@ -149,7 +149,7 @@
                         @endforeach
                     </div>
                 </div>
-                <div x-show="tab === 2" class="scroll-box">
+                <div x-show="tab === 1" class="scroll-box">
                     <div class="scroll-inner">
                         @foreach ($chodors as $chador)
                             <div class="product-card">
@@ -203,7 +203,7 @@
                         @endforeach
                     </div>
                 </div>
-                <div x-show="tab === 3" class="scroll-box">
+                <div x-show="tab === 2" class="scroll-box">
                     <div class="scroll-inner">
                         @foreach ($abas as $aba)
                             <div class="product-card">
@@ -267,3 +267,4 @@
         </div>
     </section>
     <!-- end food section -->
+

@@ -140,6 +140,9 @@
                                                 تعداد
                                             </th>
                                             <th>
+                                                سایز
+                                            </th>
+                                            <th>
                                                 قیمت کل
                                             </th>
                                         </tr>
@@ -159,6 +162,9 @@
                                                 </td>
                                                 <td>
                                                     {{ $item->quantity }}
+                                                </td>
+                                                <td>
+                                                    {{ $item->size }}
                                                 </td>
                                                 <td>
                                                     {{ number_format($item->subtotal) }}

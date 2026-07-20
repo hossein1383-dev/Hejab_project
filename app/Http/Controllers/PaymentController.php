@@ -15,6 +15,7 @@ class PaymentController extends Controller
 {
     public function send(Request $request, ZarinpalService $zarinpal)
     {
+        // dd($request->session()->get('cart', []));
         $request->validate([
             'address_id' => ['required', 'integer', 'exists:user_addresses,id'],
         ]);
@@ -25,24 +26,22 @@ class PaymentController extends Controller
         }
 
         $total = 0;
-        $orderItems = []; // برای ذخیره آیتم‌ها برای استفاده بعدی
+        $orderItems = []; 
 
-        // محاسبه total با احتساب تخفیف هر محصول
+
         foreach ($cart as $productId => $item) {
             $product = Product::findOrFail($productId);
 
-            // قیمت با تخفیف یا بدون تخفیف
             $price = $product->is_sale ? $product->sale_price : $product->price;
 
-            // جمع کل با قیمت تخفیف‌خورده
             $total += $price * $item['qty'];
-
-            // ذخیره اطلاعات برای استفاده در OrderItem
             $orderItems[$productId] = [
                 'product' => $product,
                 'price' => $price,
                 'qty' => $item['qty'],
+                'size' => $item['size'],
             ];
+            // dd($orderItems);
         }
 
         DB::beginTransaction();
@@ -53,13 +52,15 @@ class PaymentController extends Controller
                 'address_id' => $request->address_id,
                 'total_amount' => $total, // الان total با تخفیف محاسبه شده
                 'paying_amount' => $total,
+                
             ]);
 
-            // ایجاد آیتم‌های سفارش با قیمت‌های تخفیف‌خورده
+
             foreach ($orderItems as $productId => $item) {
                 OrderItem::create([
                     'order_id' => $order->id,
                     'product_id' => $productId,
+                    'size' => $item['size'],
                     'price' => $item['price'], // قیمت تخفیف‌خورده یا اصلی
                     'quantity' => $item['qty'],
                     'subtotal' => $item['price'] * $item['qty'], // زیرمجموع با تخفیف

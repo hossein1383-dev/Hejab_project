@@ -2,7 +2,7 @@
 @section('title', 'Cart Page')
 
 @section('content')
-    @if ($cart == null)
+    @if ($cart == null || count($cart) == 0)
         <div class="cart-empty">
             <div class="text-center">
                 <div>
@@ -28,20 +28,33 @@
                                         <tr>
                                             <th>محصول</th>
                                             <th>نام</th>
+                                            <th>سایز</th> <!-- اضافه شد -->
                                             <th>قیمت</th>
                                             <th>تعداد</th>
                                             <th>قیمت کل</th>
+                                            <th></th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         @foreach ($cart as $key => $item)
-                                            <tr class="cart-item" data-product-id="{{ $key }}">
+                                            @php
+                                            // dd($item);
+                                                $productId = $item['productId']; // ✅ مستقیم از آرایه
+                                                $size = $item['size'] ?? null; // ✅ مستقیم از آرایه
+                                                $price = $item['is_sale'] ? $item['sale_price'] : $item['price'];
+                                            @endphp
+                                            <tr class="cart-item" data-product-id="{{ $productId }}"
+                                                data-size="{{ $size }}">
                                                 <td>
                                                     <img class="rounded img-fluid"
                                                         src="{{ imageUrl($item['primary_image']) }}" width="90" />
                                                 </td>
 
                                                 <td class="fw-bold">{{ $item['name'] }}</td>
+
+                                                <td>
+                                                    {{ $size ?? '-' }}
+                                                </td>
 
                                                 <td>
                                                     @if ($item['is_sale'])
@@ -60,26 +73,27 @@
                                                 <td>
                                                     <div class="input-counter">
                                                         <a href="#" class="plus-btn"
-                                                            data-product-id="{{ $key }}">+</a>
+                                                            data-product-id="{{ $productId }}"
+                                                            data-size="{{ $size }}">+</a>
 
                                                         <div class="input-number">{{ $item['qty'] }}</div>
 
                                                         <a href="#" class="minus-btn"
-                                                            data-product-id="{{ $key }}">-</a>
+                                                            data-product-id="{{ $productId }}"
+                                                            data-size="{{ $size }}">-</a>
                                                     </div>
                                                 </td>
 
                                                 <td>
-                                                    @php $price = $item['is_sale'] ? $item['sale_price'] : $item['price']; @endphp
                                                     <span class="item-total-price">
                                                         {{ number_format($item['qty'] * $price) }}
                                                     </span>
                                                     <span class="ms-1">تومان</span>
                                                 </td>
 
-
                                                 <td>
-                                                    <a href="{{ route('cart_remove', ['product_id' => $key]) }}">
+                                                    <a
+                                                        href="{{ route('cart_remove', ['product_id' => $productId, 'size' => $size]) }}">
                                                         <i class="bi bi-x text-danger fw-bold fs-4 cursor-pointer"></i>
                                                     </a>
                                                 </td>
@@ -93,13 +107,16 @@
                         <!-- نسخه کارت برای موبایل -->
                         <div class="d-md-none">
                             @foreach ($cart as $key => $item)
-                                <div class="card mb-3 p-3 shadow-sm cart-item" data-product-id="{{ $key }}">
+                                <div class="card mb-3 p-3 shadow-sm cart-item" data-product-id="{{ $productId }}"
+                                    data-size="{{ $size }}">
 
                                     <div class="d-flex gap-3">
                                         <img src="{{ imageUrl($item['primary_image']) }}" class="rounded" width="90">
                                         <div>
                                             <div class="fw-bold mb-2">{{ $item['name'] }}</div>
-
+                                            @if (!empty($size))
+                                                <div class="fw-bold mb-2">سایز: {{ $size }}</div>
+                                            @endif
                                             @php $price = $item['is_sale'] ? $item['sale_price'] : $item['price']; @endphp
 
                                             @if ($item['is_sale'])
@@ -122,12 +139,14 @@
                                     <hr>
 
                                     <div class="d-flex justify-content-between align-items-center">
-                                        <div class="input-counter" data-product-id="{{ $key }}">
-                                            <a href="#" class="plus-btn" data-product-id="{{ $key }}">+</a>
+                                        <div class="input-counter">
+                                            <a href="#" class="plus-btn" data-product-id="{{ $productId }}"
+                                                data-size="{{ $size }}">+</a>
 
                                             <div class="input-number">{{ $item['qty'] }}</div>
 
-                                            <a href="#" class="minus-btn" data-product-id="{{ $key }}">-</a>
+                                            <a href="#" class="minus-btn" data-product-id="{{ $productId }}"
+                                                data-size="{{ $size }}">-</a>
                                         </div>
 
                                         <div class="fw-bold">
@@ -137,7 +156,8 @@
                                             <span>تومان</span>
                                         </div>
 
-                                        <a href="{{ route('cart_remove', ['product_id' => $key]) }}">
+                                        <a
+                                            href="{{ route('cart_remove', ['product_id' => $productId]) }}">
                                             <i class="bi bi-x text-danger fw-bold fs-4 cursor-pointer"></i>
                                         </a>
                                     </div>
@@ -156,37 +176,26 @@
                 <!-- بخش آدرس و کد تخفیف -->
                 <div class="row gy-3 mt-3">
 
-                    {{-- <div class="col-12 col-md-6">
-                    <div class="input-group">
-                        <input type="text" class="form-control" placeholder="کد تخفیف" />
-                        <button class="btn btn-primary">اعمال</button>
-                    </div>
-                </div> --}}
                     <div class="col-12 col-md-8 col-lg-6">
-                        <!-- flex-row-reverse در تبلت و دسکتاپ دکمه را می‌برد سمت چپ (در RTL) -->
                         <div class="d-flex flex-column flex-md-row-reverse align-items-stretch align-items-md-center gap-3">
 
-                            <!-- دکمه ایجاد آدرس (سمت چپ در لپ‌تاپ و تبلت) -->
                             <div class="w-100 w-md-auto">
                                 <a href="{{ route('addresses_create') }}" class="btn btn-primary w-100 text-nowrap">
                                     افزودن آدرس
                                 </a>
                             </div>
 
-                            <!-- انتخاب آدرس (سمت راست در لپ‌تاپ و تبلت) -->
                             <div class="flex-grow-1">
                                 @if (isset($addresses) && $addresses->isNotEmpty())
                                     <select class="form-select w-100" x-model="address_id">
                                         <option value="">انتخاب آدرس</option>
                                         @foreach ($addresses as $address)
-                                            {{-- {{ dd($address) }} --}}
                                             <option value="{{ $address->id }}">
                                                 {{ Str::words($address->address, 3, '...') }}
                                             </option>
                                         @endforeach
                                     </select>
 
-                                    {{-- نمایش ارور --}}
                                     <div class="form-text text-danger mt-1 small">
                                         @error('address_id')
                                             {{ $message }}
@@ -237,6 +246,7 @@
                                 <form action="{{ route('payment_send') }}" method="POST">
                                     @csrf
                                     <input type="hidden" name="address_id" :value="address_id">
+                                    <input type="hidden" name="size" value="{{ $size }}">
                                     <button type="submit" class="btn btn-primary w-100 mt-4">پرداخت</button>
                                 </form>
 
@@ -266,7 +276,7 @@
                 if (finalPrice) {
                     finalPrice.textContent = Number(data.final_price).toLocaleString('fa-IR') + ' تومان';
                 }
-                // به‌روزرسانی تعداد در Badge
+                // به‌روزرسانی تعداد در Badge (اگر در لایه‌بندی وجود دارد)
                 document.querySelectorAll('.cart-badge').forEach(el => {
                     el.textContent = data.cart_count;
                 });
@@ -277,6 +287,7 @@
                 btn.addEventListener('click', function(e) {
                     e.preventDefault();
                     const productId = this.dataset.productId;
+                    const size = this.dataset.size || null; // ممکن است null باشد
                     fetch("{{ route('increment') }}", {
                             method: "POST",
                             headers: {
@@ -286,7 +297,7 @@
                             },
                             body: JSON.stringify({
                                 product_id: productId,
-                                qty: 1
+                                size: size
                             })
                         })
                         .then(res => res.json())
@@ -328,6 +339,7 @@
                 btn.addEventListener('click', function(e) {
                     e.preventDefault();
                     const productId = this.dataset.productId;
+                    const size = this.dataset.size || null;
                     fetch("{{ route('decrement') }}", {
                             method: "POST",
                             headers: {
@@ -336,21 +348,27 @@
                                 "X-Requested-With": "XMLHttpRequest"
                             },
                             body: JSON.stringify({
-                                product_id: productId
+                                product_id: productId,
+                                size: size
                             })
                         })
                         .then(res => res.json())
                         .then(data => {
-                            if (!data.success) return;
+                            if (!data.success) {
+                                Toast.fire({
+                                    icon: 'error',
+                                    title: data.message
+                                });
+                                return;
+                            }
 
                             const row = this.closest('.cart-item');
                             if (data.removed) {
                                 // حذف سطر از DOM
                                 row.remove();
-                                // اگر سبد خرید خالی شد، می‌توانید کل صفحه را ریلود کنید یا پیغام خالی بودن نشان دهید
-                                // برای سادگی، در صورت خالی بودن کل سبد، صفحه را refresh کنید
+                                // اگر سبد خرید خالی شد، صفحه را ریلود کنید
                                 if (data.cart_count === 0) {
-                                    location.reload(); // یا پیام مناسب
+                                    location.reload();
                                     return;
                                 }
                             } else {

@@ -13,7 +13,7 @@
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
 
-    <link rel="stylesheet" href="{{ asset('/css/style.css') }}">
+    <link rel="stylesheet" href="{{ asset('/css/main.css') }}">
     {{-- <script defer src="{{ asset('js/alpine.js') }}"></script> --}}
 
 
@@ -101,7 +101,7 @@
                         <li class="nav-item">
                             @auth
                                 <a href="{{ route('index_profile') }}"
-                                    class="nav-link {{ request()->is('contact*') ? 'active' : '' }}"‍>
+                                    class="nav-link {{ request()->is('profile*') ? 'active' : '' }}"‍>
                                     پنل کاربری
                                 </a>
                             @endauth

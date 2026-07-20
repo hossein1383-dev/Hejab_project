@@ -57,4 +57,10 @@ class Product extends Model
 
         return $query;
     }
+
+    // در مدل Product
+    public function sizes()
+    {
+        return $this->hasMany(Size::class); // مدل ProductSize باید وجود داشته باشد
+    }
 }
