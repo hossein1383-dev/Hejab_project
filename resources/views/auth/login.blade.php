@@ -163,8 +163,8 @@
 
                                             <template x-if="seconds > 0 || minutes > 0">
                                                 <div class="mb-1 me-3">
-                                                    <span x-text="seconds < 0 ? `2${seconds}` : seconds"></span>:
-                                                    <span x-text="minutes < 0 ? `2${minutes}` : minutes"></span>
+                                                    <span x-text="seconds < 10 ? `0${seconds}` : seconds"></span>:
+                                                    <span x-text="minutes < 10 ? `0${minutes}` : minutes"></span>
                                                 </div>
                                             </template>
 
