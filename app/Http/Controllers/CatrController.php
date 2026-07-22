@@ -21,11 +21,10 @@ class CatrController extends Controller
     // ✅ تابع ساخت کلید سبد خرید
     private function getCartKey($productId, $size = null)
     {
-        // اگر سایز وجود داشت، با productId و size کلید بساز
         if (!empty($size)) {
             return $productId . '_' . $size;
         }
-        // اگر سایز نداشت، فقط با productId
+
         return $productId;
     }
 
@@ -57,9 +56,14 @@ class CatrController extends Controller
 
         // ✅ بررسی سایز
         $size = null;
-        if ($this->hasSize($product)) {
-            // اگر محصول سایز دارد و کاربر سایز نفرستاده، L بگذار
-            $size = $request->size ?: 'L';
+        if ($product && $this->hasSize($product)) {
+            $defaultSize = match ($product->category_id) {
+                1 => 'L',
+                3 => '165',
+                default => null,
+            };
+
+            $size = $request->size ?: $defaultSize;
         } else {
             // اگر محصول سایز ندارد، سایز را null بگذار (حتی اگر کاربر فرستاده باشد)
             $size = null;
@@ -133,9 +137,14 @@ class CatrController extends Controller
 
         // ✅ بررسی سایز
         $size = null;
-        if ($this->hasSize($product)) {
-            // اگر محصول سایز دارد و کاربر سایز نفرستاده، L بگذار
-            $size = $request->size ?: 'L';
+        if ($product && $this->hasSize($product)) {
+            $defaultSize = match ($product->category_id) {
+                1 => 'L',
+                3 => '165',
+                default => null,
+            };
+
+            $size = $request->size ?: $defaultSize;
         } else {
             // اگر محصول سایز ندارد، سایز را null بگذار
             $size = null;

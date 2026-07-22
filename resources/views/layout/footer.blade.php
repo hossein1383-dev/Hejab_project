@@ -8,13 +8,21 @@
                 <div class="row">
                     <div class="col-md-4 footer-col">
                         <h4>
-                            ساعت کاری
+                            روزهای کاری
                         </h4>
                         <p>
                             {{ $footer->work_days }}
                         </p>
+
+                    </div>
+                    <div class="col-md-4 footer-col">
+                        <h4>
+                            ساعت کاری
+                        </h4>
                         <p>
-                            {{ $footer->work_hour_from }}صبح تا {{ $footer->work_hour_to }} شب
+                            {{ $footer->work_hour_from }}
+                            <br>
+                            {{ $footer->work_hour_to }}
                         </p>
                     </div>
 
