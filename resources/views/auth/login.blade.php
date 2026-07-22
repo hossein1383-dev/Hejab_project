@@ -13,8 +13,8 @@
                 loadingResend: false,
                 checkOtpForm: false,
 
-                seconds: 10,
-                minutes: 0,
+                seconds: 0,
+                minutes: 2,
 
                 async login() {
                     this.loading = true;
@@ -91,8 +91,8 @@
 
                     if (res.ok) {
                         this.loginToken = data.login_token
-                        this.seconds = 10;
-                        this.minutes = 0;
+                        this.seconds = 0;
+                        this.minutes = 2;
                         this.timer();
                         this.error = '';
                     } else {
@@ -163,8 +163,8 @@
 
                                             <template x-if="seconds > 0 || minutes > 0">
                                                 <div class="mb-1 me-3">
-                                                    <span x-text="seconds < 10 ? `0${seconds}` : seconds"></span>:
-                                                    <span x-text="minutes < 10 ? `0${minutes}` : minutes"></span>
+                                                    <span x-text="seconds < 0 ? `2${seconds}` : seconds"></span>:
+                                                    <span x-text="minutes < 0 ? `2${minutes}` : minutes"></span>
                                                 </div>
                                             </template>
 
