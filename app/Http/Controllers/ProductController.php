@@ -40,7 +40,7 @@ class ProductController extends Controller
     public function showChador()
     {
         $products = Product::where('category_id', 3)->where('status', 1)->orderBy('id')->paginate(12);
-        return view('products.chador', compact('products', 'desc'));
+        return view('products.chador', compact('products'));
     }
     public function showAba()
     {

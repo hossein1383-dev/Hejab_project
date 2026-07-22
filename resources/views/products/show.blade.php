@@ -18,7 +18,6 @@
                                             class="carousel-img d-block w-100" alt="">
                                     </div>
                                     @foreach ($product->images as $image)
-                                        {{ dd($product->images) }}
                                         <div class="carousel-item">
                                             <img src="{{ ImageUrl($image->image) }}" class="carousel-img d-block w-100"
                                                 alt="">
@@ -66,62 +65,52 @@
                                 <div class="product-desc mt-3">
                                     {!! $product->description !!}
                                 </div>
-
-                                <!-- ===== نمایش سایزها به صورت چک‌باکس ===== -->
-                                <!-- ===== نمایش سایزها ===== -->
-                                <div class="product-sizes mt-4">
+                                <br>
+                                @if ($product->sizes->isNotEmpty())
                                     <h5>سایزهای موجود:</h5>
-                                    @if ($product->sizes->isNotEmpty())
-                                        <div class="d-flex flex-wrap gap-3 mt-2" id="sizeCheckboxes">
-                                            @foreach ($product->sizes as $size)
-                                                <div class="form-check">
-                                                    <input class="form-check-input size-checkbox" type="checkbox"
-                                                        name="size" value="{{ $size->size_name }}"
-                                                        id="size_{{ $size->size_name }}"
-                                                        {{ $size->stock == 0 ? 'disabled' : '' }}>
-                                                    <label class="form-check-label" for="size_{{ $size->size_name }}">
-                                                        {{ $size->size_name }}
-                                                        <span
-                                                            class="badge {{ $size->stock ? 'bg-success' : 'bg-danger' }} ms-1">
-                                                            {{ $size->stock ? 'موجود' : 'ناموجود' }}
-                                                        </span>
-                                                    </label>
-                                                </div>
-                                            @endforeach
-                                        </div>
-                                        <small class="text-muted">(فقط یک سایز قابل انتخاب است)</small>
-                                    @else
-                                    
-                                    @endif
-                                </div>
-
-                                <!-- ===== فرم افزودن به سبد خرید با چک‌باکس سایز ===== -->
-                                <form x-data="{ quantity: 1 }" action="{{ route('cart_add') }}" method="POST"
-                                    class="d-flex flex-column flex-sm-row gap-3 mt-3">
-                                    @csrf
-                                    <input type="hidden" name="product_id" value="{{ $product->id }}">
-                                    <input type="hidden" name="qty" :value="quantity">
-                                    <input type="hidden" name="size" id="selectedSize" value="">
-
-                                    <button class="btn btn-dark" type="submit" id="addToCartBtn">
-                                        افزودن به سبد خرید
-                                    </button>
-                                    <div class="input-counter d-flex align-items-center">
-                                        <span @click="quantity < {{ $product->quantity }} && quantity++"
-                                            class="plus-btn px-3">
-                                            +
-                                        </span>
-                                        <div class="input-number px-3" x-text="quantity"></div>
-                                        <span @click="quantity > 1 && quantity--" class="minus-btn px-3">
-                                            -
-                                        </span>
+                                    <div class="d-flex flex-wrap mt-2" id="sizeCheckboxes">
+                                        @foreach ($product->sizes as $size)
+                                            <div class="form-check">
+                                                <input class="form-check-input size-checkbox" type="checkbox" name="size"
+                                                    value="{{ $size->size_name }}" id="size_{{ $size->size_name }}"
+                                                    {{ $size->stock == 0 ? 'disabled' : '' }}>
+                                                <label class="form-check-label" for="size_{{ $size->size_name }}">
+                                                    {{ $size->size_name }}
+                                                </label>
+                                            </div>
+                                        @endforeach
                                     </div>
-                                </form>
+
+                                @else
+                                @endif
                             </div>
+
+                            <!-- ===== فرم افزودن به سبد خرید با چک‌باکس سایز ===== -->
+                            <form x-data="{ quantity: 1 }" action="{{ route('cart_add') }}" method="POST"
+                                class="d-flex flex-column flex-sm-row gap-3 mt-3">
+                                @csrf
+                                <input type="hidden" name="product_id" value="{{ $product->id }}">
+                                <input type="hidden" name="qty" :value="quantity">
+                                <input type="hidden" name="size" id="selectedSize" value="">
+
+                                <button class="btn btn-dark" type="submit" id="addToCartBtn">
+                                    افزودن به سبد خرید
+                                </button>
+                                <div class="input-counter d-flex align-items-center">
+                                    <span @click="quantity < {{ $product->quantity }} && quantity++" class="plus-btn px-3">
+                                        +
+                                    </span>
+                                    <div class="input-number px-3" x-text="quantity"></div>
+                                    <span @click="quantity > 1 && quantity--" class="minus-btn px-3">
+                                        -
+                                    </span>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
         </div>
     </section>
 

@@ -34,6 +34,7 @@ class ProfileConrtoller extends Controller
         $orders = Auth::user()
             ->orders()
             ->with(['address.city', 'orderItems.product'])
+            ->latest()
             ->paginate(2);
 
         return view('profile.order', compact('orders'));
@@ -41,9 +42,7 @@ class ProfileConrtoller extends Controller
 
     public function transaction()
     {
-        $transactions = Auth::user()
-            ->transactions()
-            ->paginate(3);
+        $transactions = Auth::user()->transactions()->latest()->paginate(3);
 
         return view('profile.transactions', compact('transactions'));
     }

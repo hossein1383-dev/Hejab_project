@@ -149,6 +149,7 @@
                                     </thead>
                                     <tbody>
                                         @foreach ($order->orderItems as $item)
+                                        {{-- {{ dd($order->orderItems) }} --}}
                                             <tr>
                                                 <th>
                                                     <img class="rounded"

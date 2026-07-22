@@ -1,5 +1,6 @@
+
 @if ($products->isEmpty())
-    <div class="empty-product">
+    <div id="cart-container" class="empty-product">
         محصولی یافت نشد!
     </div>
 @endif

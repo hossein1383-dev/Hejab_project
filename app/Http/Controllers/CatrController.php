@@ -10,11 +10,22 @@ use Illuminate\Support\Facades\Log;
 
 class CatrController extends Controller
 {
+    // ✅ لیست دسته‌بندی‌هایی که سایز دارند
+    private function hasSize($product)
+    {
+        $categoriesWithSize = ['چادر', 'عبا']; // نام دسته‌بندی‌ها
+
+        return in_array($product->category->name, $categoriesWithSize);
+    }
+
+    // ✅ تابع ساخت کلید سبد خرید
     private function getCartKey($productId, $size = null)
     {
-        if (empty($size)) {
-            $size = 'L';
+        // اگر سایز وجود داشت، با productId و size کلید بساز
+        if (!empty($size)) {
+            return $productId . '_' . $size;
         }
+        // اگر سایز نداشت، فقط با productId
         return $productId;
     }
 
@@ -38,13 +49,23 @@ class CatrController extends Controller
     {
         $request->validate([
             'product_id' => 'required|integer|exists:products,id',
-            'size' => 'nullable|string|max:50', // سایز اختیاری
+            'size' => 'nullable|string|max:50',
         ]);
 
-        $product = Product::findOrFail($request->product_id);
+        $product = Product::with('category')->findOrFail($request->product_id);
         $cart = session('cart', []);
-        $size = $request->size ?: 'L';
-        $cartKey = $this->getCartKey($request->product_id);
+
+        // ✅ بررسی سایز
+        $size = null;
+        if ($this->hasSize($product)) {
+            // اگر محصول سایز دارد و کاربر سایز نفرستاده، L بگذار
+            $size = $request->size ?: 'L';
+        } else {
+            // اگر محصول سایز ندارد، سایز را null بگذار (حتی اگر کاربر فرستاده باشد)
+            $size = null;
+        }
+
+        $cartKey = $this->getCartKey($request->product_id, $size);
 
         if (isset($cart[$cartKey])) {
             if ($cart[$cartKey]['qty'] >= $product->quantity) {
@@ -66,9 +87,15 @@ class CatrController extends Controller
                 'price' => $product->price,
                 'sale_price' => $product->sale_price,
                 'primary_image' => $product->primary_image,
-                'size' => $size,
+                'size' => $this->hasSize($product) ? $size : null,
+
                 'qty' => 1,
             ];
+
+            // ✅ فقط اگر سایز دارد، size را ذخیره کن
+            if ($this->hasSize($product)) {
+                $cart[$cartKey]['size'] = $size;
+            }
         }
 
         session()->put('cart', $cart);
@@ -98,12 +125,22 @@ class CatrController extends Controller
         $request->validate([
             'product_id' => 'required|integer|exists:products,id',
             'qty' => 'required|integer|min:1',
-            'size' => 'nullable|string|max:50', // سایز اختیاری
+            'size' => 'nullable|string|max:50',
         ]);
 
-        $product = Product::findOrFail($request->product_id);
+        $product = Product::with('category')->findOrFail($request->product_id);
         $cart = session('cart', []);
-        $size = $request->size ?: 'L';
+
+        // ✅ بررسی سایز
+        $size = null;
+        if ($this->hasSize($product)) {
+            // اگر محصول سایز دارد و کاربر سایز نفرستاده، L بگذار
+            $size = $request->size ?: 'L';
+        } else {
+            // اگر محصول سایز ندارد، سایز را null بگذار
+            $size = null;
+        }
+
         $cartKey = $this->getCartKey($request->product_id, $size);
 
         if (isset($cart[$cartKey])) {
@@ -125,9 +162,15 @@ class CatrController extends Controller
                 'price' => $product->price,
                 'sale_price' => $product->sale_price,
                 'primary_image' => $product->primary_image,
-                'size' => $request->size, // ذخیره سایز
+                'size' => $this->hasSize($product) ? $size : null,
+                // ✅ ذخیره می‌کنیم که سایز دارد یا نه
                 'qty' => $request->qty,
             ];
+
+            // ✅ فقط اگر سایز دارد، size را ذخیره کن
+            if ($this->hasSize($product)) {
+                $cart[$cartKey]['size'] = $size;
+            }
         }
 
         session()->put('cart', $cart);
@@ -142,7 +185,15 @@ class CatrController extends Controller
         ]);
 
         $cart = session('cart', []);
-        $cartKey = $this->getCartKey($request->product_id, $request->size);
+        $product = Product::with('category')->find($request->product_id);
+
+        // ✅ بررسی سایز
+        $size = null;
+        if ($product && $this->hasSize($product)) {
+            $size = $request->size ?: 'L';
+        }
+
+        $cartKey = $this->getCartKey($request->product_id, $size);
 
         if (!isset($cart[$cartKey])) {
             return response()->json([
@@ -188,13 +239,38 @@ class CatrController extends Controller
         ]);
 
         $cart = session('cart', []);
-        $cartKey = $this->getCartKey($request->product_id, $request->size);
+        $product = Product::with('category')->find($request->product_id);
+
+        // بررسی سایز
+        $size = null;
+        if ($product && $this->hasSize($product)) {
+            $size = $request->size ?: 'L';
+        }
+
+        $cartKey = $this->getCartKey($request->product_id, $size);
 
         if (isset($cart[$cartKey])) {
             unset($cart[$cartKey]);
         }
 
         session()->put('cart', $cart);
+
+        // اگر درخواست AJAX است
+        if ($request->ajax() || $request->wantsJson()) {
+            // محاسبه مجدد مجموع‌ها
+            $totals = $this->calculateTotals($cart);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'محصول مورد نظر از سبد خرید حذف شد',
+                'cart_count' => count($cart),
+                'total_price' => $totals['total_price'],
+                'total_discount' => $totals['total_discount'],
+                'final_price' => $totals['final_price'],
+                'removed' => true,
+            ]);
+        }
+
         return redirect()->back()->with('success', 'محصول مورد نظر از سبد خرید حذف شد');
     }
 

@@ -2115,3 +2115,62 @@ color:white !important;
     opacity: 0;
     transform: translateY(-30px) scaleY(0.8);
 }
+
+.form-check {
+    display: inline-block;
+    margin: 0 8px 8px 0;
+    padding: 0;
+}
+
+.size-checkbox {
+    display: none;
+}
+
+.form-check-label {
+    min-width: 55px;
+    height: 24px;
+    padding: 0 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #dcdcdc;
+    border-radius: 10px;
+    background: #fff;
+    color: #3f4064;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all .25s ease;
+    user-select: none;
+}
+
+.form-check-label:hover {
+    border-color: #ffbe33;
+    color: #ffbe33;
+    box-shadow: 0 4px 10px rgba(239, 64, 86, .15);
+}
+
+.size-checkbox:checked + .form-check-label {
+    border: 2px solid #ffbe33;
+    background: #fff5f6;
+    color: #ffbe33;
+    box-shadow: 0 4px 12px rgba(239, 64, 86, .2);
+}
+
+.size-checkbox:disabled + .form-check-label {
+    background: #f5f5f5;
+    color: #b5b5b5;
+    border: 1px dashed #dcdcdc;
+    cursor: not-allowed;
+    opacity: .7;
+    position: relative;
+}
+
+.size-checkbox:disabled + .form-check-label::after {
+    content: "";
+    position: absolute;
+    width: 80%;
+    height: 2px;
+    background: #b5b5b5;
+    transform: rotate(-20deg);
+}

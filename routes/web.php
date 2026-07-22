@@ -65,7 +65,7 @@ Route::prefix('cart')->group(function () {
     Route::post('/add', [CatrController::class, 'add'])->name('cart_add'); // تغییر متد به POST
     Route::post('/decrement', [CatrController::class, 'decrement'])->name('decrement');
     Route::post('/increment', [CatrController::class, 'increment'])->name('increment');
-    Route::get('/remove', [CatrController::class, 'remove'])->name('cart_remove');
+    Route::post('/remove', [CatrController::class, 'remove'])->name('cart_remove');
     Route::get('/clear', [CatrController::class, 'clear'])->name('cart_clear');
 });
 

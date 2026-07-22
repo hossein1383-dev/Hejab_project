@@ -63,4 +63,9 @@ class Product extends Model
     {
         return $this->hasMany(Size::class); // مدل ProductSize باید وجود داشته باشد
     }
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
 }
